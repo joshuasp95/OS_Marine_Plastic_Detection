@@ -32,7 +32,7 @@ python -m venv venv
 - On Windows:
 
 ```
-venv\Scripts\activate
+venv\Scripts\activate.bat
 ```
 
 - On macOS/Linux:
