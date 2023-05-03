@@ -25,7 +25,7 @@ This repository contains tools and resources for performing atmospheric correcti
 
 ```
 python -m venv venv
-`` `
+```
 
 5. Activate the virtual environment:
 
