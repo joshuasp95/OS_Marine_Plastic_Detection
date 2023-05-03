@@ -23,21 +23,29 @@ This repository contains tools and resources for performing atmospheric correcti
 3. Clone this repository or download it as a ZIP file.
 4. Create a virtual environment:
 
-`python -m venv venv `
+```
+python -m venv venv
+`` `
 
 5. Activate the virtual environment:
 
 - On Windows:
 
-`sh venv\Scripts\activate`
+```
+sh venv\Scripts\activate
+```
 
 - On macOS/Linux:
 
-`source venv/bin/activate`
+```
+source venv/bin/activate
+```
 
 6. Install required Python libraries:
 
-`pip install -r requirements.txt`
+```
+pip install -r requirements.txt
+```
 
 \*Note: The requirements.txt file is not shown, but it can be generated based on the libraries needed for the scripts.
 
