@@ -1,4 +1,4 @@
-# The code searches for files within a specific directory that meet a certain pattern
+# The code searches for sentinel-2 scenes within a specific directory that meet a certain pattern
 # and then processes them using Sen2Cor,
 # generating the output in another directory specified by the user.
 
@@ -9,9 +9,8 @@ import re
 # Library for executing subprocesses
 import subprocess
 
+
 # Function that executes processing of .SAFE files using Sen2Cor
-
-
 def run_sen2cor(source_dir, sen2_out_dir):
     print('Running Sen2Cor...')
     # Get the default directory for Windows download files

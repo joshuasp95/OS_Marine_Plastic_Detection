@@ -2,6 +2,13 @@
 
 This repository contains tools and resources for performing atmospheric correction and generating applicable indices for detecting plastic from Sentinel-2 satellite images. The primary scripts process the images using the Sen2Cor and Acolite tools and Python libraries.
 
+## Important
+
+Once the sen2cor script has been applied to the
+sentinel-2 image you can't use the acolite script
+to process the same image, you must unzip
+the original .SAFE file again.
+
 ## Features
 
 - Atmospheric correction using the Sen2Cor and Acolite tools
