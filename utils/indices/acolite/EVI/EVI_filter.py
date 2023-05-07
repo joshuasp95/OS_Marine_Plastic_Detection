@@ -1,11 +1,7 @@
-# Script para filtrar según el valor del Enhanced Vegetation Index (EVI) los tif generados por EVI.py
-# Mirar estudios para filtrar por los valores de EVI que tenga el plastico o dejar fuera
-# (e.j EVI > -0.1 & EVI < 0.0)
-
 # Import libraries
 import glob
 import os
-from osgeo import gdal  # If GDAL doesn't recognize jp2 format, check version
+from osgeo import gdal
 import re
 
 
@@ -23,10 +19,10 @@ def filter_evi_values(path):
     # Set input directory
     in_dir = path
 
-    # Regex para capturar las bandas y sus extensiones
+    # Regex to search the needed EVI tif bands
     pattern = re.compile(r'.*[\\\/].*(492|665|833)\.tif$')
 
-    # Obtenemos listas conteniendo cada banda que se recorrera en bucle posteriormente
+    # We search within folders the selected bands
     blue_files = glob.glob(os.path.join(in_dir, '**'), recursive=True)
     blue_files = [band for band in blue_files if pattern.match(
         band) and '492' in band]
@@ -47,7 +43,7 @@ def filter_evi_values(path):
     print(len(nir_files))
 
     for i in range(len(red_files)):
-        
+
         # Open each band using gdal
         blue_link = gdal.Open(blue_files[i])
         red_link = gdal.Open(red_files[i])
@@ -58,17 +54,16 @@ def filter_evi_values(path):
         red = red_link.ReadAsArray().astype(float)
         nir = nir_link.ReadAsArray().astype(float)
 
-
         # Call the evi() function on blue, red, NIR  bands
         evi2 = evi(blue, red, nir)
 
         # Create output filename based on input name
         outfile_name = red_files[i].split('_L')[0] + '_EVI_Filtered.tif'
 
-        # Matriz booleana
+        # Boolean matrix
         evi_mask = (evi2 >= -0.0283) & (evi2 <= 0.0255)
 
-        # Convertir matriz a mascara
+        # Convert matrix to mask
         evi_treshold = evi_mask.astype(int)
 
         x_pixels = evi2.shape[0]  # number of pixels in x
@@ -98,6 +93,6 @@ def filter_evi_values(path):
 if __name__ == '__main__':
 
     path = input(
-        "Introduce la ruta donde se van a buscar las imagenes para filtrar según un rango determinado los valores de EVI: ")
+        "Enter the path where the images will be searched to filter according to a specific EVI value range: ")
 
     filter_evi_values(path)

@@ -1,14 +1,12 @@
-# Script para filtrar según el valor del NDMI los tif generados por NDMI.py
-# Mirar estudios para filtrar por los valores de NDMI que tenga el plastico o dejar fuera (e.j 0.1 < NDMI)
-
 # Import libraries
 import glob
 import os
 import re
-from osgeo import gdal  # If GDAL doesn't recognize jp2 format, check version
-
+from osgeo import gdal
 
 # Define a function to calculate NDMI values
+
+
 def ndmi(swir, nir):
     try:
         return ((nir-swir)/(nir + swir))
@@ -22,10 +20,8 @@ def filter_ndmi_values(path):
     # Set input directory
     in_dir = path
 
-    # Regex para capturar las bandas y sus extensiones
     pattern = re.compile(r'.*[\\\/].*(833|1610|1614)\.tif$')
 
-    # Obtenemos listas conteniendo cada banda que se recorrera en bucle posteriormente
     swir_files = glob.glob(os.path.join(in_dir, '**'), recursive=True)
     swir_files = [band for band in swir_files if pattern.match(
         band) and ('1614' in band or '1610' in band)]
@@ -53,7 +49,7 @@ def filter_ndmi_values(path):
         # Matriz booleana
         ndmi_mask = (ndmi2 >= -0.4) & (ndmi2 <= 0.4)
 
-        # Convertir matriz a mascara
+        # Boolean mask
         ndmi_treshold = ndmi_mask.astype(int)
 
         x_pixels = ndmi2.shape[0]  # number of pixels in x
@@ -83,6 +79,6 @@ def filter_ndmi_values(path):
 if __name__ == '__main__':
 
     path = input(
-        "Introduce la ruta donde se van a buscar las imagenes para filtrar según un rango determinado los valores de NDMI: ")
+        "Enter the path where the images will be searched to filter according to a specific NDMI value range: ")
 
     filter_ndmi_values(path)

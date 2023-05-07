@@ -1,10 +1,9 @@
-# Script para calcular el Plastic Index (PI) de todos las imagenes de Sentinel-2 preprocesadas con Acolite
-# La formula del PI = NIR/(NIR+RED)
+# PI = NIR/(NIR+RED)
 
 # Import libraries
 import glob
 import os
-from osgeo import gdal  # If GDAL doesn't recognize jp2 format, check version
+from osgeo import gdal
 import re
 
 
@@ -22,10 +21,8 @@ def calculate_PI(path):
     # Set input directory
     in_dir = path
 
-    # Regex para capturar las bandas y sus extensiones
     pattern = re.compile(r'.*[\\\/].*(665|833)\.tif$')
 
-    # Obtenemos listas conteniendo cada banda que se recorrera en bucle posteriormente
     red_files = glob.glob(os.path.join(in_dir, '**'), recursive=True)
     red_files = [band for band in red_files if pattern.match(
         band) and '665' in band]
@@ -84,6 +81,6 @@ def calculate_PI(path):
 if __name__ == '__main__':
 
     path = input(
-        "Introduce la ruta donde se van a buscar los .jp2 o .tif de Sentinel2 para calcular el PI: ")
+        "Enter the path where the Sentinel2 .tif files will be searched to calculate the PI: ")
 
     calculate_PI(path)

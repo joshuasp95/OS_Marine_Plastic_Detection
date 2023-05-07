@@ -1,13 +1,11 @@
-# Script para calcular el Kernel Normalized Difference Vegetation Index (kNDVI) de todos 
-# las imagenes de Sentinel-2 con correccion atmosferica (rhos) .tif de Acolite
-# La formula del kNDVI = tanh(NDVI*NDVI)
+# kNDVI = tanh(NDVI*NDVI)
 
 # Import libraries
 import glob
 import re
 import os
 import numpy as np
-from osgeo import gdal  # If GDAL doesn't recognize jp2 format, check version
+from osgeo import gdal
 
 
 # Define a function to calculate kNDVI values
@@ -27,10 +25,8 @@ def calculate_kNDVI(path):
     # Set input directory
     in_dir = path
 
-    # Regex para capturar las bandas y sus extensiones
     pattern = re.compile(r'.*[\\\/].*(665|833)\.tif$')
 
-    # Obtenemos listas conteniendo cada banda que se recorrera en bucle posteriormente
     red_files = glob.glob(os.path.join(in_dir, '**'), recursive=True)
     red_files = [band for band in red_files if pattern.match(
         band) and '665' in band]
@@ -66,7 +62,7 @@ def calculate_kNDVI(path):
 
         # Create driver using output filename, x and y pixels, # of bands, and datatype
         kndvi_data = driver.Create(outfile_name, x_pixels,
-                                  y_pixels, 1, gdal.GDT_Float32)
+                                   y_pixels, 1, gdal.GDT_Float32)
 
         # Set kNDVI array as the 1 output raster band
         kndvi_data.GetRasterBand(1).WriteArray(kndvi2)
@@ -84,6 +80,6 @@ def calculate_kNDVI(path):
 
 if __name__ == "__main__":
     path = input(
-        "Introduce la ruta donde se van a buscar los archivos de Acolite para calcular el kNDVI: ")
+        "Enter the path where the Acolite files will be searched to calculate the kNDVI: ")
 
     calculate_kNDVI(path)

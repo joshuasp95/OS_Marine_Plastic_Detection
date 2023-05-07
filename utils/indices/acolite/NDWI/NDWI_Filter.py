@@ -1,11 +1,8 @@
-# Script para filtrar según el valor del NDWI los tif generados por NDWI.py
-# Mirar estudios para filtrar por los valores de NDWI que tenga el plastico o dejar fuera (e.j 0.3 < NDWI)
-
 # Import libraries
 import glob
 import os
 import re
-from osgeo import gdal  # If GDAL doesn't recognize jp2 format, check version
+from osgeo import gdal  
 
 
 # Define a function to calculate NDWI values
@@ -22,10 +19,8 @@ def filter_ndwi_values(path):
     # Set input directory
     in_dir = path
 
-    # Regex para capturar las bandas y sus extensiones
     pattern = re.compile(r'.*[\\\/].*(559|560|833)\.tif$')
 
-    # Obtenemos listas conteniendo cada banda que se recorrera en bucle posteriormente
     green_files = glob.glob(os.path.join(in_dir, '**'), recursive=True)
     green_files = [band for band in green_files if pattern.match(
         band) and ('559' in band or '560' in band)]
@@ -47,10 +42,9 @@ def filter_ndwi_values(path):
         # Call the ndwi() function on green, NIR bands
         ndwi2 = ndwi(green, nir)
 
-        # Nombre de salida
         outfile_name = green_files[i].split('_L')[0] + '_NDWI_Filtered.tif'
 
-        # Matriz booleana
+        # Mask boolean
         ndwi_mask = (ndwi2 >= -0.4) & (ndwi2 <= 0.4)
 
         # Convertir matriz a mascara
@@ -83,6 +77,6 @@ def filter_ndwi_values(path):
 if __name__ == '__main__':
 
     path = input(
-        "Introduce la ruta donde se van a buscar las imagenes para filtrar según un rango determinado los valores de NDWI: ")
+        "Enter the path where the images will be searched to filter according to a specific NDWI value range: ")
 
     filter_ndwi_values(path)

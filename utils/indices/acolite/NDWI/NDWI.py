@@ -1,12 +1,10 @@
-# Script para calcular el Normalized Difference Water Index (NDWI) de todos
-# las imagenes de Sentinel-2 con correccion atmosferica (rhos) .tif de Acolite
-# La formula del NDWI = (green - nir)/(green+nir)
+# NDWI = (green - nir)/(green+nir)
 
 # Import libraries
 import glob
 import re
 import os
-from osgeo import gdal  # If GDAL doesn't recognize jp2 format, check version
+from osgeo import gdal
 
 
 # Define a function to calculate NDWI values
@@ -23,10 +21,8 @@ def calculate_NDWI(path):
     # Set input directory
     in_dir = path
 
-    # Regex para capturar las bandas y sus extensiones
     pattern = re.compile(r'.*[\\\/].*(559|560|833)\.tif$')
 
-    # Obtenemos listas conteniendo cada banda que se recorrera en bucle posteriormente
     green_files = glob.glob(os.path.join(in_dir, '**'), recursive=True)
     green_files = [band for band in green_files if pattern.match(
         band) and ('559' in band or '560' in band)]
@@ -80,6 +76,6 @@ def calculate_NDWI(path):
 
 if __name__ == "__main__":
     path = input(
-        "Introduce la ruta donde se van a buscar los archivos de Acolite para calcular el NDWI: ")
+        "Enter the path where the Acolite files will be searched to calculate the NDWI: ")
 
     calculate_NDWI(path)

@@ -1,11 +1,9 @@
-# Script para calcular el Enhanced Vegetation Index (EVI) de todas las imagenes de Sentinel-2 con correccion atmosferica (rhos)
-# .tif de Acolite
-# La formula del EVI = 2.5*(nir - red)/(nir+ 6*red - 7.5*blue +1)
+# EVI = 2.5*(nir - red)/(nir+ 6*red - 7.5*blue +1)
 
 # Import libraries
 import glob
 import os
-from osgeo import gdal  # If GDAL doesn't recognize jp2 format, check version
+from osgeo import gdal
 import re
 
 
@@ -23,10 +21,8 @@ def calculate_evi(path):
     # Set input directory
     in_dir = path
 
-    # Regex para capturar las bandas y sus extensiones
     pattern = re.compile(r'.*[\\\/].*(492|665|833)\.tif$')
 
-    # Obtenemos listas conteniendo cada banda que se recorrera en bucle posteriormente
     blue_files = glob.glob(os.path.join(in_dir, '**'), recursive=True)
     blue_files = [band for band in blue_files if pattern.match(
         band) and '492' in band]
@@ -95,6 +91,6 @@ def calculate_evi(path):
 if __name__ == '__main__':
 
     path = input(
-        "Introduce la ruta donde se van a buscar los .tif de acolite (rhos) para calcular el EVI: ")
+        "Enter the path where the Acolite (rhos) .tif files will be searched to calculate the EVI: ")
 
     calculate_evi(path)

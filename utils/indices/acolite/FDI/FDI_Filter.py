@@ -1,11 +1,7 @@
-# Script para filtrar según el valor del FDI los tif generados por FDI.py
-# Mirar estudios para filtrar por los valores de FDI que tenga el plastico o dejar fuera
-# (e.j FDI > 0.02 & FDI < 0.06)
-
 # Import libraries
 import glob
 import os
-from osgeo import gdal  # If GDAL doesn't recognize jp2 format, check version
+from osgeo import gdal
 import re
 
 
@@ -24,10 +20,8 @@ def filter_fdi_values(path):
     # Set input directory
     in_dir = path
 
-    # Regex para capturar las bandas y sus extensiones
     pattern = re.compile(r'.*[\\\/].*(665|739|740|833|1610|1614)\.tif$')
 
-    # Obtenemos listas conteniendo cada banda que se recorrera en bucle posteriormente
     red_files = glob.glob(os.path.join(in_dir, '**'), recursive=True)
     red_files = [band for band in red_files if pattern.match(
         band) and '665' in band]
@@ -103,6 +97,6 @@ def filter_fdi_values(path):
 if __name__ == '__main__':
 
     path = input(
-        "Introduce la ruta donde se van a buscar las imagenes para filtrar según un rango determinado los valores de FDI: ")
+        "Enter the path where the images will be searched to filter according to a specific FDI value range: ")
 
     filter_fdi_values(path)

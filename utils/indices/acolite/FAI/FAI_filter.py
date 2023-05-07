@@ -1,11 +1,7 @@
-# Script para filtrar según el valor del FAI los tif generados por FAI.py
-# Mirar estudios para filtrar por los valores de FAI que tenga el plastico o dejar fuera
-# (e.j FAI > 0.02 & FAI < 0.06)
-
 # Import libraries
 import glob
 import os
-from osgeo import gdal  # If GDAL doesn't recognize jp2 format, check version
+from osgeo import gdal
 import re
 
 
@@ -24,10 +20,8 @@ def filter_fai_values(path):
     # Set input directory
     in_dir = path
 
-    # Regex para capturar las bandas y sus extensiones
     pattern = re.compile(r'.*[\\\/].*(665|833|1610|1614)\.tif$')
 
-    # Obtenemos listas conteniendo cada banda que se recorrera en bucle posteriormente
     red_files = glob.glob(os.path.join(in_dir, '**'), recursive=True)
     red_files = [band for band in red_files if pattern.match(
         band) and '665' in band]
@@ -63,9 +57,9 @@ def filter_fai_values(path):
         outfile_name = red_files[i].split('_L')[0] + '_FAI_Filtered.tif'
 
         # Matriz booleana
-        fai_mask = (fai2 >=  -0.0038) & (fai2 <= 0.0123)
+        fai_mask = (fai2 >= -0.0038) & (fai2 <= 0.0123)
 
-        # Convertir matriz a mascara
+        # Convert to mask (boolean)
         fai_treshold = fai_mask.astype(int)
 
         x_pixels = fai2.shape[0]  # number of pixels in x
@@ -95,6 +89,6 @@ def filter_fai_values(path):
 if __name__ == '__main__':
 
     path = input(
-        "Introduce la ruta donde se van a buscar las imagenes para filtrar según un rango determinado los valores de FAI: ")
+        "Enter the path where the images will be searched to filter according to a specific FAI value range: ")
 
     filter_fai_values(path)

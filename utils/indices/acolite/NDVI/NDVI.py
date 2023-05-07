@@ -1,17 +1,12 @@
-"""
-###############################################################################
-#                   How to: Calculate NDVI from Sentinel-2A                   #
-###############################################################################
-# @author: Cole Krehbiel 
-# @modified by: Joshua Sainz Palacios  
-# Last Updated: 10-18-17                                                      #  
-###############################################################################
-"""
+# @author: Cole Krehbiel, thanks and big support
+# @modified by: Joshua Sainz Palacios
+# NDVI = nir-red / nir+red
+
 # Import libraries
 import glob
 import re
 import os
-from osgeo import gdal  # If GDAL doesn't recognize jp2 format, check version
+from osgeo import gdal 
 
 
 # Define a function to calculate NDVI using band arrays for red, NIR bands
@@ -28,10 +23,8 @@ def calculate_NDVI(path):
     # Set input directory
     in_dir = path
 
-    # Regex para capturar las bandas y sus extensiones
     pattern = re.compile(r'.*[\\\/].*(665|833)\.tif$')
 
-    # Obtenemos listas conteniendo cada banda que se recorrera en bucle posteriormente
     red_files = glob.glob(os.path.join(in_dir, '**'), recursive=True)
     red_files = [band for band in red_files if pattern.match(
         band) and '665' in band]
@@ -85,6 +78,6 @@ def calculate_NDVI(path):
 
 if __name__ == "__main__":
     path = input(
-        "Introduce la ruta donde se van a buscar los archivos de Acolite para calcular el NDVI: ")
+        "Enter the path where the Acolite files will be searched to calculate the NDVI: ")
 
     calculate_NDVI(path)

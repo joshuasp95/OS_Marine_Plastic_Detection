@@ -1,6 +1,4 @@
-# Script para calcular el Normalized Difference Moisture Index (NDMI) de todos
-# las imagenes de Sentinel-2 con correccion atmosferica (rhos) .tif de Acolite
-# La formula del NDMI = (nir - swir)/(swir + nir)
+# NDMI = (nir - swir)/(swir + nir)
 
 # Import libraries
 import glob
@@ -23,10 +21,8 @@ def calculate_NDMI(path):
     # Set input directory
     in_dir = path
 
-    # Regex para capturar las bandas y sus extensiones
     pattern = re.compile(r'.*[\\\/].*(833|1610|1614)\.tif$')
 
-    # Obtenemos listas conteniendo cada banda que se recorrera en bucle posteriormente
     swir_files = glob.glob(os.path.join(in_dir, '**'), recursive=True)
     swir_files = [band for band in swir_files if pattern.match(
         band) and ('1614' in band or '1610' in band)]
@@ -80,6 +76,6 @@ def calculate_NDMI(path):
 
 if __name__ == "__main__":
     path = input(
-        "Introduce la ruta donde se van a buscar los archivos de Acolite para calcular el NDMI: ")
+        "Enter the path where the Acolite files will be searched to calculate the NDMI: ")
 
     calculate_NDMI(path)

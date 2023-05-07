@@ -1,11 +1,8 @@
-# Script para filtrar según el valor del Plastic Index (PI) los tif generados por PI.py
-# Según el estudio realizado en Chipre los valores deberian ser 0.39 a 0.42
-
 # Import libraries
 import glob
 import os
 import re
-from osgeo import gdal  # If GDAL doesn't recognize jp2 format, check version
+from osgeo import gdal  
 
 
 # Define a function to calculate plastic index using band arrays for red, NIR bands
@@ -19,10 +16,8 @@ def filter_pi_values(path):
     # Set input directory
     in_dir = path
 
-    # Regex para capturar las bandas y sus extensiones
     pattern = re.compile(r'.*[\\\/].*(665|833)\.tif$')
 
-    # Obtenemos listas conteniendo cada banda que se recorrera en bucle posteriormente
     red_files = glob.glob(os.path.join(in_dir, '**'), recursive=True)
     red_files = [band for band in red_files if pattern.match(
         band) and '665' in band]
@@ -44,10 +39,9 @@ def filter_pi_values(path):
         # Call the pi() function on red, NIR bands
         pi2 = pi(red, nir)
 
-        # Nombre de salida
         outfile_name = red_files[i].split('_L')[0] + '_PI_Filtered.tif'
 
-        # Matriz booleana
+        # Boolean mask
         pi_mask = (pi2 >= 0.35) & (pi2 <= 0.45)
 
         # Convertir matriz a mascara
@@ -80,6 +74,7 @@ def filter_pi_values(path):
 if __name__ == '__main__':
 
     path = input(
-        "Introduce la ruta donde se van a buscar las imagenes para filtrar según un rango determinado los valores de PI: ")
+        "Enter the path where the images will be searched to filter according to a specific PI value range: ")
 
     filter_pi_values(path)
+

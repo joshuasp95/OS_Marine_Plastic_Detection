@@ -1,11 +1,9 @@
-# Script para calcular el Floating Algae Index (FAI) de todos las imagenes de Sentinel-2 con correccion atmosferica (rhos)
-# .tif de Acolite
-# La formula del FAI = (nir - (red + (swir - red) * ((833-665)/(1614-665))))
+# FAI = (nir - (red + (swir - red) * ((833-665)/(1614-665))))
 
 # Import libraries
 import glob
 import os
-from osgeo import gdal  # If GDAL doesn't recognize jp2 format, check version
+from osgeo import gdal  
 import re
 
 
@@ -24,10 +22,8 @@ def calculate_fai(path):
     # Set input directory
     in_dir = path
 
-    # Regex para capturar las bandas y sus extensiones
     pattern = re.compile(r'.*[\\\/].*(665|833|1610|1614)\.tif$')
 
-    # Obtenemos listas conteniendo cada banda que se recorrera en bucle posteriormente
     red_files = glob.glob(os.path.join(in_dir, '**'), recursive=True)
     red_files = [band for band in red_files if pattern.match(
         band) and '665' in band]
@@ -93,6 +89,7 @@ def calculate_fai(path):
 if __name__ == '__main__':
 
     path = input(
-        "Introduce la ruta donde se van a buscar los .tif de acolite (rhos) para calcular el FAI: ")
+    "Enter the path where the Acolite (rhos) .tif files will be searched to calculate the FAI: ")
 
     calculate_fai(path)
+
