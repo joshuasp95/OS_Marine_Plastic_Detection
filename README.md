@@ -88,7 +88,7 @@ python main.py
 
 5. Enter the directory containing the .SAFE files and the output directory when prompted.
 
-The scripts will process the Sentinel-2 images using Sen2Cor and Acolite, generate output files containing atmospheric-corrected images.
+The scripts will process the Sentinel-2 images using Sen2Cor and Acolite, generate output files containing atmospheric-corrected images and the tif files corresponding to the indices that should detect pixels containing plastic debris
 
 ## Acknowledgements
 
