@@ -78,6 +78,14 @@ python sen2cor_script.py
 python acolite_script.py
 ```
 
+```
+python calculate_indices.py
+```
+
+```
+python main.py
+```
+
 5. Enter the directory containing the .SAFE files and the output directory when prompted.
 
 The scripts will process the Sentinel-2 images using Sen2Cor and Acolite, generate output files containing atmospheric-corrected images.
