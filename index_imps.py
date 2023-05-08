@@ -28,4 +28,5 @@ import utils.indices.sen2cor.NDWI.NDWI as sen2cor_ndwi
 import utils.indices.sen2cor.NDWI.NDWI_Filter as sen2cor_ndwi_filter
 import utils.indices.sen2cor.PI.PI as sen2cor_pi
 import utils.indices.sen2cor.PI.PI_Filter as sen2cor_pi_filter
+import utils.indices.sen2cor.kNDVI.kNDVI as sen2cor_kndvi
 import utils.indices.sen2cor.kNDVI.kNDVI_Filter as sen2cor_kndvi_filter
