@@ -1,13 +1,12 @@
-# Script para calcular el Kernel Normalized Difference Vegetation Index (kNDVI) de todos las imagenes de Sentinel-2 sin correccion atmosferica (.jp2)
-# o con correccion atmosferica .tif
-# La formula del kNDVI = tanh(NDVI*NDVI)
+# Script to calculate the Kernel Normalized Difference Vegetation Index (kNDVI) of Sentinel-2 images without atmospheric correction (.jp2) or with atmospheric correction (.tif)
+# The formula for kNDVI = tanh(NDVI*NDVI)
 
 # Import libraries
 import glob
 import numpy as np
 import re
 import os
-from osgeo import gdal  # If GDAL doesn't recognize jp2 format, check version
+from osgeo import gdal  
 
 
 # Define a function to calculate kNDVI values
@@ -28,10 +27,10 @@ def calculate_kNDVI(path):
     # Set input directory
     in_dir = path
 
-    # Regex para capturar las bandas y sus extensiones
+    # Regex to capture the bands and their extensions
     pattern = re.compile(r'.*_(B\d{2})_\d+m\.tif$|.*_(B\d{2})\.jp2$')
 
-    # Obtenemos listas conteniendo cada banda que se recorrera en bucle posteriormente
+    # Get lists containing each band that will be iterated over later
     red_files = glob.glob(os.path.join(in_dir, '**'), recursive=True)
     red_files = [band for band in red_files if pattern.match(
         band) and 'B04' in band]
@@ -49,11 +48,11 @@ def calculate_kNDVI(path):
         red_link = gdal.Open(red_files[i])
         nir_link = gdal.Open(nir_files[i])
 
-        # read in each band as array and convert to float for calculations
+        # Read each band as an array and convert it to float for calculations
         red = red_link.ReadAsArray().astype(float)
         nir = nir_link.ReadAsArray().astype(float)
 
-        # Call the ndvi() function on red, NIR bands
+        # Call the kndvi() function on red and NIR bands
         kndvi2 = kndvi(red, nir)
 
         # Create output filename based on input name
@@ -65,18 +64,18 @@ def calculate_kNDVI(path):
         # Set up output GeoTIFF
         driver = gdal.GetDriverByName('GTiff')
 
-        # Create driver using output filename, x and y pixels, # of bands, and datatype
-        kndvi_data = driver.Create(outfile_name, x_pixels,
-                                   y_pixels, 1, gdal.GDT_Float32)
+        # Create a driver using the output filename, x and y pixels, number of bands, and datatype
+        kndvi_data = driver.Create(
+            outfile_name, x_pixels, y_pixels, 1, gdal.GDT_Float32)
 
-        # Set kNDVI array as the 1 output raster band
+        # Set the kNDVI array as the 1 output raster band
         kndvi_data.GetRasterBand(1).WriteArray(kndvi2)
 
-        # Setting up the coordinate reference system of the output GeoTIFF
-        geotrans = red_link.GetGeoTransform()  # Grab input GeoTranform information
-        proj = red_link.GetProjection()  # Grab projection information from input file
+        # Set up the coordinate reference system of the output GeoTIFF
+        geotrans = red_link.GetGeoTransform()  # Grab input GeoTransform information
+        proj = red_link.GetProjection()  # Grab projection information from the input file
 
-        # now set GeoTransform parameters and projection on the output file
+        # Set GeoTransform parameters and projection on the output file
         kndvi_data.SetGeoTransform(geotrans)
         kndvi_data.SetProjection(proj)
         kndvi_data.FlushCache()
@@ -85,6 +84,6 @@ def calculate_kNDVI(path):
 
 if __name__ == "__main__":
     path = input(
-        "Introduce la ruta donde se van a buscar los archivos de Acolite para calcular el kNDVI: ")
+        "Enter the path where Acolite files are located to calculate the kNDVI: ")
 
     calculate_kNDVI(path)

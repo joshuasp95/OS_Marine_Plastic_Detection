@@ -1,23 +1,22 @@
-# Script para calcular el Floating Debris Index (FDI) de todos las imagenes de Sentinel-2 sin correccion atmosferica (.jp2)
-# o con correccion atmosferica .tif
-# La formula del FDI = (nir - (re2 + (swir - re2) * ((833-665)/(1614-665) * 10)))
+# Script to calculate the Floating Debris Index (FDI) of Sentinel-2 images without atmospheric correction (.jp2)
+# or with atmospheric correction (.tif)
+# The formula for FDI = (nir - (re2 + (swir - re2) * ((833-665)/(1614-665) * 10)))
 
 # Import libraries
 import glob
 import os
-from osgeo import gdal  # If GDAL doesn't recognize jp2 format, check version
+from osgeo import gdal  
 import re
 
 
-# Para las imagenes originales es necesario resamplear los archivos a 20 m para que tengan la misma
-# resolucion que las demas bandas(10m)
+# Resample the original images to 20m resolution to match the resolution of other bands (10m)
 def resampler(file, folderpath):
 
     path = file
 
     ds = gdal.Open(path)
 
-    # resample
+    # Resample
     dsRes = gdal.Warp(os.path.join(folderpath + '_resampled.tif'), ds, xRes=10, yRes=10,
                       resampleAlg="near")
 
@@ -32,7 +31,7 @@ def resampler(file, folderpath):
     return os.path.join(folderpath + '_resampled.tif')
 
 
-def resamplear_20_to_10(files):
+def resample_to_10m(files):
     files_res = []
     for file in files:
         if file.endswith('.jp2'):
@@ -60,10 +59,10 @@ def calculate_fdi(path):
     # Set input directory
     in_dir = path
 
-    # Regex para capturar las bandas y sus extensiones
+    # Regex to capture the bands and their extensions
     pattern = re.compile(r'.*_(B\d{2})_\d+m\.tif$|.*_(B\d{2})\.jp2$')
 
-    # Obtenemos listas conteniendo cada banda que se recorrera en bucle posteriormente
+    # Get lists containing each band that will be iterated over later
     red_files = glob.glob(os.path.join(in_dir, '**'), recursive=True)
     red_files = [band for band in red_files if pattern.match(
         band) and 'B04' in band]
@@ -85,8 +84,8 @@ def calculate_fdi(path):
     print(nir_files)
     print(swir_files)
 
-    re2_files = resamplear_20_to_10(re2_files)
-    swir_files = resamplear_20_to_10(swir_files)
+    re2_files = resample_to_10m(re2_files)
+    swir_files = resample_to_10m(swir_files)
 
     for i in range(len(red_files)):
 
@@ -96,7 +95,7 @@ def calculate_fdi(path):
         nir_link = gdal.Open(nir_files[i])
         swir_link = gdal.Open(swir_files[i])
 
-        # read in each band as array and convert to float for calculations
+        # Read each band as an array and convert it to float for calculations
         red = red_link.ReadAsArray().astype(float)
         re2 = re2_link.ReadAsArray().astype(float)
         nir = nir_link.ReadAsArray().astype(float)
@@ -107,32 +106,32 @@ def calculate_fdi(path):
         print('nir', nir)
         print('swir', swir)
 
-        # Call the fdi() function on red, Red Edge 2, NIR and SWIR bands
+        # Call the fdi() function on red, Red Edge 2, NIR, and SWIR bands
         fdi2 = fdi(re2, nir, swir)
         print(fdi2)
 
-        # Create output filename based on input name
+        # Create the output filename based on the input name
         outfile_name = red_files[i].split('_B')[0] + '_FDI.tif'
 
         x_pixels = fdi2.shape[0]  # number of pixels in x
         y_pixels = fdi2.shape[1]  # number of pixels in y
 
         try:
-            # Set up output GeoTIFF
+            # Set up the output GeoTIFF
             driver = gdal.GetDriverByName('GTiff')
 
-            # Create driver using output filename, x and y pixels, # of bands, and datatype
-            fdi_data = driver.Create(outfile_name, x_pixels,
-                                     y_pixels, 1, gdal.GDT_Float32)
+            # Create a driver using the output filename, x and y pixels, number of bands, and datatype
+            fdi_data = driver.Create(
+                outfile_name, x_pixels, y_pixels, 1, gdal.GDT_Float32)
 
-            # Set FDI array as the 1 output raster band
+            # Set the FDI array as the 1 output raster band
             fdi_data.GetRasterBand(1).WriteArray(fdi2)
 
-            # Setting up the coordinate reference system of the output GeoTIFF
-            geotrans = red_link.GetGeoTransform()  # Grab input GeoTranform information
-            proj = red_link.GetProjection()  # Grab projection information from input file
+            # Set up the coordinate reference system of the output GeoTIFF
+            geotrans = red_link.GetGeoTransform()  # Grab input GeoTransform information
+            proj = red_link.GetProjection()  # Grab projection information from the input file
 
-            # now set GeoTransform parameters and projection on the output file
+            # Set GeoTransform parameters and projection on the output file
             fdi_data.SetGeoTransform(geotrans)
             fdi_data.SetProjection(proj)
             fdi_data.FlushCache()
@@ -145,6 +144,6 @@ def calculate_fdi(path):
 if __name__ == '__main__':
 
     path = input(
-        "Introduce la ruta donde se van a buscar los .jp2 originales para calcular el FDI: ")
+        "Enter the path where the original .jp2 files are located to calculate FDI: ")
 
     calculate_fdi(path)

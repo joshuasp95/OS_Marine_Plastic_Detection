@@ -1,5 +1,6 @@
-# Script para filtrar según el valor del Plastic Index (PI) los tif generados por PI.py
-# Según el estudio realizado en Chipre los valores deberian ser 0.39 a 0.42
+"""
+# Script to filter the generated TIFF files by Plastic Index (PI) value from PI.py
+"""
 
 # Import libraries
 import glob
@@ -19,10 +20,10 @@ def filter_pi_values(path):
     # Set input directory
     in_dir = path
 
-    # Regex para capturar las bandas y sus extensiones
+    # Regex to capture bands and their extensions
     pattern = re.compile(r'.*_(B\d{2})_\d+m\.tif$|.*_(B\d{2})\.jp2$')
 
-    # Obtenemos listas conteniendo cada banda que se recorrera en bucle posteriormente
+    # Get lists containing each band that will be looped through later
     red_files = glob.glob(os.path.join(in_dir, '**'), recursive=True)
     red_files = [band for band in red_files if pattern.match(
         band) and 'B04' in band]
@@ -44,16 +45,16 @@ def filter_pi_values(path):
         red = red_link.ReadAsArray().astype(float)
         nir = nir_link.ReadAsArray().astype(float)
 
-        # Call the ndvi() function on red, NIR bands
+        # Call the pi() function on red, NIR bands
         pi2 = pi(red, nir)
 
-        # Nombre de salida
+        # Output name
         outfile_name = red_files[i].split('_B')[0] + '_PI_Filtered.tif'
 
-        # Matriz booleana
+        # Boolean matrix
         pi_mask = (pi2 >= 0.424) & (pi2 <= 0.477)
 
-        # Convertir matriz a mascara
+        # Convert matrix to mask
         pi_treshold = pi_mask.astype(int)
 
         x_pixels = pi2.shape[0]  # number of pixels in x
@@ -62,7 +63,7 @@ def filter_pi_values(path):
         # Set up output GeoTIFF
         driver = gdal.GetDriverByName('GTiff')
 
-        # Create driver using output filename, x and y pixels, # of bands, and datatype
+        # Create driver using output filename, x and y pixels, number of bands, and datatype
         pi_data = driver.Create(outfile_name, x_pixels,
                                 y_pixels, 1, gdal.GDT_Byte)
 
@@ -70,7 +71,7 @@ def filter_pi_values(path):
         pi_data.GetRasterBand(1).WriteArray(pi_treshold)
 
         # Setting up the coordinate reference system of the output GeoTIFF
-        geotrans = red_link.GetGeoTransform()  # Grab input GeoTranform information
+        geotrans = red_link.GetGeoTransform()  # Grab input GeoTransform information
         proj = red_link.GetProjection()  # Grab projection information from input file
 
         # now set GeoTransform parameters and projection on the output file
@@ -83,6 +84,6 @@ def filter_pi_values(path):
 if __name__ == '__main__':
 
     path = input(
-        "Introduce la ruta donde se van a buscar las imagenes para filtrar según un rango determinado los valores de PI: ")
+        "Enter the path where the images will be searched to filter the PI values within a specific range: ")
 
     filter_pi_values(path)

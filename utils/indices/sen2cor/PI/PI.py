@@ -1,6 +1,8 @@
-# Script para calcular el Plastic Index (PI) de todos las imagenes de Sentinel-2 sin correccion atmosferica (.jp2)
-# o con correccion atmosferica .tif
-# La formula del PI = NIR/(NIR+RED)
+"""
+# Script to calculate the Plastic Index (PI) for all Sentinel-2 images without atmospheric correction (.jp2)
+# or with atmospheric correction (.tif)
+# The formula for PI = NIR/(NIR+RED)
+"""
 
 # Import libraries
 import glob
@@ -23,10 +25,10 @@ def calculate_PI(path):
     # Set input directory
     in_dir = path
 
-    # Regex para capturar las bandas y sus extensiones
+    # Regex to capture bands and their extensions
     pattern = re.compile(r'.*_(B\d{2})_\d+m\.tif$|.*_(B\d{2})\.jp2$')
 
-    # Obtenemos listas conteniendo cada banda que se recorrera en bucle posteriormente
+    # Get lists containing each band that will be looped through later
     red_files = glob.glob(os.path.join(in_dir, '**'), recursive=True)
     red_files = [band for band in red_files if pattern.match(
         band) and 'B04' in band]
@@ -37,7 +39,6 @@ def calculate_PI(path):
 
     print(red_files)
     print(nir_files)
-
 
     for i in range(len(red_files)):
 
@@ -62,7 +63,7 @@ def calculate_PI(path):
             # Set up output GeoTIFF
             driver = gdal.GetDriverByName('GTiff')
 
-            # Create driver using output filename, x and y pixels, # of bands, and datatype
+            # Create driver using output filename, x and y pixels, number of bands, and datatype
             pi_data = driver.Create(outfile_name, x_pixels,
                                     y_pixels, 1, gdal.GDT_Float32)
 
@@ -86,6 +87,6 @@ def calculate_PI(path):
 if __name__ == '__main__':
 
     path = input(
-        "Introduce la ruta donde se van a buscar los .jp2 o .tif de Sentinel2 para calcular el PI: ")
+        "Enter the path where the .jp2 or .tif Sentinel2 files will be searched to calculate the PI: ")
 
     calculate_PI(path)

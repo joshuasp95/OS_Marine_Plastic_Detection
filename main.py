@@ -141,7 +141,7 @@ def run(path, out_path):
 
         # NDWI
         i.sen2cor_ndwi.calculate_NDWI(safe_dir)
-        # i.sen2cor_ndwi_filter.filter_ndwi_values(source_dir)
+        i.sen2cor_ndwi_filter.filter_ndwi_values(source_dir)
 
         # NDMI
         i.sen2cor_ndmi.calculate_NDMI(safe_dir)

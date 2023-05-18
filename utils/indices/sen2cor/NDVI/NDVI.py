@@ -1,12 +1,13 @@
 """
-# @author: Cole Krehbiel 
-# @modified by: Joshua Sainz Palacios  
+@ORIGINAL_author: Cole Krehbiel
+@modified by: Joshua Sainz Palacios
 """
+
 # Import libraries
 import glob
 import re
 import os
-from osgeo import gdal  # If GDAL doesn't recognize jp2 format, check version
+from osgeo import gdal 
 
 
 # Define a function to calculate NDVI using band arrays for red, NIR bands
@@ -23,10 +24,10 @@ def calculate_NDVI(path):
     # Set input directory
     in_dir = path
 
-    # Regex para capturar las bandas y sus extensiones
+    # Regex to capture bands and their extensions
     pattern = re.compile(r'.*_(B\d{2})_\d+m\.tif$|.*_(B\d{2})\.jp2$')
 
-    # Obtenemos listas conteniendo cada banda que se recorrera en bucle posteriormente
+    # Get lists containing each band that will be looped through later
     red_files = glob.glob(os.path.join(in_dir, '**'), recursive=True)
     red_files = [band for band in red_files if pattern.match(
         band) and 'B04' in band]
@@ -44,7 +45,7 @@ def calculate_NDVI(path):
         red_link = gdal.Open(red_files[i])
         nir_link = gdal.Open(nir_files[i])
 
-        # read in each band as array and convert to float for calculations
+        # Read in each band as an array and convert to float for calculations
         red = red_link.ReadAsArray().astype(float)
         nir = nir_link.ReadAsArray().astype(float)
 
@@ -68,7 +69,7 @@ def calculate_NDVI(path):
         ndvi_data.GetRasterBand(1).WriteArray(ndvi2)
 
         # Setting up the coordinate reference system of the output GeoTIFF
-        geotrans = red_link.GetGeoTransform()  # Grab input GeoTranform information
+        geotrans = red_link.GetGeoTransform()  # Grab input GeoTransform information
         proj = red_link.GetProjection()  # Grab projection information from input file
 
         # now set GeoTransform parameters and projection on the output file

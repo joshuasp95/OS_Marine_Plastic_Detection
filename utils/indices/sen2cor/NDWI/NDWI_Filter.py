@@ -1,5 +1,7 @@
-# Script para filtrar según el valor del NDWI los tif generados por NDWI.py
-# Mirar estudios para filtrar por los valores de NDWI que tenga el plastico o dejar fuera (e.j 0.3 < NDWI)
+"""
+# Script to filter the generated TIFF files by NDWI value from NDWI.py
+# Look for studies to filter based on NDWI values related to plastic presence (e.g., 0.3 < NDWI)
+"""
 
 # Import libraries
 import glob
@@ -22,10 +24,10 @@ def filter_ndwi_values(path):
     # Set input directory
     in_dir = path
 
-    # Regex para capturar las bandas y sus extensiones
+    # Regex to capture bands and their extensions
     pattern = re.compile(r'.*_(B\d{2})_\d+m\.tif$|.*_(B\d{2})\.jp2$')
 
-    # Obtenemos listas conteniendo cada banda que se recorrera en bucle posteriormente
+    # Get lists containing each band that will be looped through later
     green_files = glob.glob(os.path.join(in_dir, '**'), recursive=True)
     green_files = [band for band in green_files if pattern.match(
         band) and 'B03' in band]
@@ -47,13 +49,13 @@ def filter_ndwi_values(path):
         # Call the ndwi() function on green, NIR bands
         ndwi2 = ndwi(green, nir)
 
-        # Nombre de salida
+        # Output name
         outfile_name = green_files[i].split('_B')[0] + '_NDWI_Filtered.tif'
 
-        # Matriz booleana
-        ndwi_mask = (ndwi2 >= -0.4) & (ndwi2 <= 0.4)
+        # Boolean matrix
+        ndwi_mask = (ndwi2 >= 0.164) & (ndwi2 <= 0.349)
 
-        # Convertir matriz a mascara
+        # Convert matrix to mask
         ndwi_treshold = ndwi_mask.astype(int)
 
         x_pixels = ndwi2.shape[0]  # number of pixels in x
@@ -62,7 +64,7 @@ def filter_ndwi_values(path):
         # Set up output GeoTIFF
         driver = gdal.GetDriverByName('GTiff')
 
-        # Create driver using output filename, x and y pixels, # of bands, and datatype
+        # Create driver using output filename, x and y pixels, number of bands, and datatype
         ndwi_data = driver.Create(outfile_name, x_pixels,
                                   y_pixels, 1, gdal.GDT_Byte)
 
@@ -70,7 +72,7 @@ def filter_ndwi_values(path):
         ndwi_data.GetRasterBand(1).WriteArray(ndwi_treshold)
 
         # Setting up the coordinate reference system of the output GeoTIFF
-        geotrans = green_link.GetGeoTransform()  # Grab input GeoTranform information
+        geotrans = green_link.GetGeoTransform()  # Grab input GeoTransform information
         proj = green_link.GetProjection()  # Grab projection information from input file
 
         # now set GeoTransform parameters and projection on the output file
@@ -83,6 +85,6 @@ def filter_ndwi_values(path):
 if __name__ == '__main__':
 
     path = input(
-        "Introduce la ruta donde se van a buscar las imagenes para filtrar según un rango determinado los valores de NDWI: ")
+        "Enter the path where the images will be searched to filter the NDWI values based on a specific range: ")
 
     filter_ndwi_values(path)

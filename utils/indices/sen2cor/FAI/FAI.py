@@ -1,23 +1,22 @@
-# Script para calcular el Floating Algae Index (FAI) de todos las imagenes de Sentinel-2 con correccion atmosferica (rhos)
-# .tif de Acolite
-# La formula del FAI = (nir - (red + (swir - red) * ((833-665)/(1614-665))))
+# Script to calculate the Floating Algae Index (FAI) of Sentinel-2 images with atmospheric correction (rhos)
+# using Acolite .tif files
+# The formula for FAI = (nir - (red + (swir - red) * ((833-665)/(1614-665))))
 
 # Import libraries
 import glob
 import os
-from osgeo import gdal  # If GDAL doesn't recognize jp2 format, check version
+from osgeo import gdal  
 import re
 
 
-# Para las imagenes originales es necesario resamplear los archivos a 20 m para que tengan la misma
-# resolucion que las demas bandas(10m)
+# Resample the original images to 20m resolution to match other bands (10m)
 def resampler(file, folderpath):
 
     path = file
 
     ds = gdal.Open(path)
 
-    # resample
+    # Resample
     dsRes = gdal.Warp(os.path.join(folderpath + '_resampled.tif'), ds, xRes=10, yRes=10,
                       resampleAlg="near")
 
@@ -32,7 +31,7 @@ def resampler(file, folderpath):
     return os.path.join(folderpath + '_resampled.tif')
 
 
-def resamplear_20_to_10(files):
+def resample_20_to_10(files):
     files_res = []
     for file in files:
         if file.endswith('.jp2'):
@@ -58,10 +57,10 @@ def calculate_fai(path):
     # Set input directory
     in_dir = path
 
-    # Regex para capturar las bandas y sus extensiones
+    # Regex to capture the bands and their extensions
     pattern = re.compile(r'.*_(B\d{2})_\d+m\.tif$|.*_(B\d{2})\.jp2$')
 
-    # Obtenemos listas conteniendo cada banda que se recorrera en bucle posteriormente
+    # Get lists containing each band that will be iterated over later
     red_files = glob.glob(os.path.join(in_dir, '**'), recursive=True)
     red_files = [band for band in red_files if pattern.match(
         band) and 'B04' in band]
@@ -78,16 +77,16 @@ def calculate_fai(path):
     print(nir_files)
     print(swir_files)
 
-    swir_files = resamplear_20_to_10(swir_files)
+    swir_files = resample_20_to_10(swir_files)
 
     for i in range(len(red_files)):
 
-        # Open each band using gdal
+        # Open each band using GDAL
         red_link = gdal.Open(red_files[i])
         nir_link = gdal.Open(nir_files[i])
         swir_link = gdal.Open(swir_files[i])
 
-        # read in each band as array and convert to float for calculations
+        # Read each band as an array and convert it to float for calculations
         red = red_link.ReadAsArray().astype(float)
         nir = nir_link.ReadAsArray().astype(float)
         swir = swir_link.ReadAsArray().astype(float)
@@ -96,11 +95,11 @@ def calculate_fai(path):
         print('nir', nir)
         print('swir', swir)
 
-        # Call the fai() function on red, NIR and SWIR bands
+        # Call the fai() function on red, NIR, and SWIR bands
         fai2 = fai(red, nir, swir)
         print(fai2)
 
-        # Create output filename based on input name
+        # Create an output filename based on the input name
         outfile_name = red_files[i].split('_B')[0] + '_FAI.tif'
 
         x_pixels = fai2.shape[0]  # number of pixels in x
@@ -110,18 +109,18 @@ def calculate_fai(path):
             # Set up output GeoTIFF
             driver = gdal.GetDriverByName('GTiff')
 
-            # Create driver using output filename, x and y pixels, # of bands, and datatype
+            # Create a driver using the output filename, x and y pixels, number of bands, and datatype
             fai_data = driver.Create(outfile_name, x_pixels,
                                      y_pixels, 1, gdal.GDT_Float32)
 
-            # Set FAI array as the 1 output raster band
+            # Set the FAI array as the 1 output raster band
             fai_data.GetRasterBand(1).WriteArray(fai2)
 
             # Setting up the coordinate reference system of the output GeoTIFF
-            geotrans = red_link.GetGeoTransform()  # Grab input GeoTranform information
-            proj = red_link.GetProjection()  # Grab projection information from input file
+            geotrans = red_link.GetGeoTransform()  # Grab input GeoTransform information
+            proj = red_link.GetProjection()  # Grab projection information from the input file
 
-            # now set GeoTransform parameters and projection on the output file
+            # Now set GeoTransform parameters and projection on the output file
             fai_data.SetGeoTransform(geotrans)
             fai_data.SetProjection(proj)
             fai_data.FlushCache()
@@ -132,8 +131,7 @@ def calculate_fai(path):
 
 
 if __name__ == '__main__':
-
     path = input(
-        "Introduce la ruta donde se van a buscar los .jp2 originales para calcular el FAI: ")
+        "Enter the path where the original .jp2 files are located to calculate the FAI: ")
 
     calculate_fai(path)
