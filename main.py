@@ -178,7 +178,11 @@ def run(path, out_path):
 
     # NDWI
     i.acol_ndwi.calculate_NDWI(acol_out_dir)
-    # i.acol_ndwi_filter
+    # i.acol_ndwi_filter.filter_ndwi_values(acol_out_dir)
+
+    # NDMI
+    i.acol_ndmi.calculate_NDMI(acol_out_dir)
+    # i.acol_ndmi_filter.filter_ndmi_values(acol_out_dir)
 
 # Calcular indices Sen2Cor with atmospheric correction
 
