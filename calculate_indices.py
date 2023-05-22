@@ -11,30 +11,30 @@ def run(sen2_orig="", acol_dir="", sen2_dir=""):
         # Get a list with all .SAFE within the source directory
         safe_dirs = glob.glob(os.path.join(sen2_orig, '**'), recursive=True)
         safe_dirs = [safe_dir for safe_dir in safe_dirs if safe_dir.endswith(
-            '.SAFE') and '999' not in safe_dir]
+            '.SAFE') and '999' not in safe_dir and 'QI_DATA' not in safe_dir]
         print('SAFE DIRS:', safe_dirs)
 
-        for dir in safe_dirs:
+        for safe_dir in safe_dirs:
 
             # PI
-            i.sen2cor_pi.calculate_PI(dir)
-            i.sen2cor_pi_filter.filter_pi_values(dir)
+            i.sen2cor_pi.calculate_PI(safe_dir)
+            i.sen2cor_pi_filter.filter_pi_values(safe_dir)
 
             # kNDVI
-            i.sen2cor_kndvi.calculate_kNDVI(dir)
-            i.sen2cor_kndvi_filter.filter_kndvi_values(dir)
+            i.sen2cor_kndvi.calculate_kNDVI(safe_dir)
+            i.sen2cor_kndvi_filter.filter_kndvi_values(safe_dir)
 
             # NDVI
-            i.sen2cor_ndvi.calculate_NDVI(dir)
-            i.sen2cor_ndvi_filter.filter_ndvi_values(dir)
+            i.sen2cor_ndvi.calculate_NDVI(safe_dir)
+            i.sen2cor_ndvi_filter.filter_ndvi_values(safe_dir)
 
             # NDWI
-            i.sen2cor_ndwi.calculate_NDWI(dir)
-            i.sen2cor_ndwi_filter.filter_ndwi_values(dir)
+            i.sen2cor_ndwi.calculate_NDWI(safe_dir)
+            i.sen2cor_ndwi_filter.filter_ndwi_values(safe_dir)
 
             # NDMI
-            i.sen2cor_ndmi.calculate_NDMI(dir)
-            i.sen2cor_ndmi_filter.filter_ndmi_values(dir)
+            i.sen2cor_ndmi.calculate_NDMI(safe_dir)
+            i.sen2cor_ndmi_filter.filter_ndmi_values(safe_dir)
 
     if not acol_dir == "":
         # Calculate Acolite indices
