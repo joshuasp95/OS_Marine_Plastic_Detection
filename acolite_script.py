@@ -18,7 +18,7 @@ import sys
 # Acolite into the sys path
 user_home = os.path.expanduser("~")
 sys.path.append(
-    user_home+r'\Git\Acolite')
+    user_home+r'\Git\acolite')
 
 # Be careful and do not move or format this section (autopep8 will put
 # the imports to the top and the acolite import will not work!)
